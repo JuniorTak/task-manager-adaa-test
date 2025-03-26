@@ -36,6 +36,12 @@ class TaskController extends Controller
             'image' => 'nullable|image|max:2048', // Image max size 2MB.
         ]);
 
+        // Handle image upload.
+        $imagePath = null;
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('tasks', 'public'); // Store in storage/app/public/tasks.
+        }
+
         try {
             $task = Task::create([
                 'title' => $request->title,
@@ -92,6 +98,15 @@ class TaskController extends Controller
             'due_date' => 'required|date',
             'image' => 'nullable|image|max:2048', // Image max size 2MB.
         ]);
+
+        if ($request->hasFile('image')) {
+            // Delete old image if it exists.
+            if ($task->image) {
+                Storage::disk('public')->delete($task->image);
+            }
+            $imagePath = $request->file('image')->store('tasks', 'public');
+            $task->image = $imagePath;
+        }
 
         try {
             $task->update([
