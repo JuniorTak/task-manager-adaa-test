@@ -62,9 +62,31 @@ class TaskController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Task $task)
     {
-        //
+        if ($task->user_id !== Auth::id()) {
+            return response()->json(['message' => 'Unauthorized to edit this task'], 403);
+        }
+
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'due_date' => 'required|date',
+            'image' => 'nullable|image|max:2048', // Image max size 2MB.
+        ]);
+
+        try {
+            $task->update([
+                'title' => $request->title,
+                'description' => $request->description,
+                'due_date' => $request->due_date,
+                'image' => $request->file('image') ? $request->file('image')->store('tasks_images') : $task->image,
+            ]);
+
+            return new TaskResource($task);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Failed to update task. ' . $e->getMessage()], 500);
+        }
     }
 
     /**
