@@ -16,7 +16,12 @@ class TaskController extends Controller
      */
     public function index()
     {
-        //
+        try {
+            // Return a resource collection from all the tasks.
+            return TaskResource::collection(Task::all());
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Failed to retrieve tasks. ' . $e->getMessage()], 500);
+        }
     }
 
     /**
