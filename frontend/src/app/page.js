@@ -89,6 +89,51 @@ export default function TaskManager() {
     }
   }
 
+  // Toggle task completion status.
+  async function markAsComplete(id) {
+    try {
+      const res = await fetch(`${API_URL}/tasks/${id}/complete`, {
+        method: "PUT",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error("Echec de terminaison de tâche");
+      fetchTasks(token);
+    } catch (err) {
+      // Customize error message based on error type.
+      let errorMessage = "Une erreur s'est produite. Veuillez réessayer.";
+      if (err.message.includes("Failed to fetch")) {
+        errorMessage = "Erreur réseau ! Impossible d'accéder au serveur.";
+      } else if (err.message.includes("CORS")) {
+        errorMessage = "Problème CORS ! Le backend bloque les requêtes.";
+      } else if (err.message.includes("Unauthorized")) {
+        errorMessage = "Identifiants invalides !";
+      }
+      setError(errorMessage);
+    }
+  }
+
+  // Delete a task.
+  async function deleteTask(id) {
+    try {
+      await fetch(`${API_URL}/tasks/${id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      fetchTasks(token);
+    } catch (err) {
+      // Customize error message based on error type.
+      let errorMessage = "Une erreur s'est produite. Veuillez réessayer.";
+      if (err.message.includes("Failed to fetch")) {
+        errorMessage = "Erreur réseau ! Impossible d'accéder au serveur.";
+      } else if (err.message.includes("CORS")) {
+        errorMessage = "Problème CORS ! Le backend bloque les requêtes.";
+      } else if (err.message.includes("Unauthorized")) {
+        errorMessage = "Identifiants invalides !";
+      }
+      setError(errorMessage);
+    }
+  }
+
   return (
     <div className="max-w-xl mx-auto p-4">
       <button onClick={handleLogout} className="bg-red-600 text-white px-2 py-1 rounded float-right">
@@ -143,6 +188,24 @@ export default function TaskManager() {
           {tasks.map((task) => (
             <li key={task.id} className="flex justify-between items-center border-b py-2">
               <span className="p-1">{task.title}</span>
+              <div>
+              {task.completed ? 
+                <span className="mr-2">
+                  Terminée
+                </span> :
+                <button
+                  onClick={() => markAsComplete(task.id)}
+                  className="bg-green-500 text-white px-2 py-1 rounded mr-2"
+                >
+                  Terminer
+                </button>}
+                <button
+                  onClick={() => deleteTask(task.id)}
+                  className="bg-red-500 text-white px-2 py-1 rounded"
+                >
+                  Supprimer
+                </button>
+              </div>
             </li>
           ))}
         </ul>
