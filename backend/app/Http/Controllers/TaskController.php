@@ -60,6 +60,24 @@ class TaskController extends Controller
     }
 
     /**
+     * Mark the specified task as Completed.
+     */
+    public function markAsCompleted(Task $task)
+    {
+        if ($task->user_id !== Auth::id()) {
+            return response()->json(['message' => 'Unauthorized to complete this task'], 403);
+        }
+
+        try {
+            $task->update(['completed' => true]);
+
+            return new TaskResource($task);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Failed to mark task as completed. ' . $e->getMessage()], 500);
+        }
+    }
+
+    /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, Task $task)
