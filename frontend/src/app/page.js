@@ -30,6 +30,10 @@ export default function TaskManager() {
     localStorage.removeItem("token");
     router.push("/login");
   }
+  // Edit a task.
+  function editTask(id) {
+    //
+  }
 
   // Fetch tasks from API.
   async function fetchTasks(token) {
@@ -75,6 +79,7 @@ export default function TaskManager() {
       if (!res.ok) throw new Error("Echec d'ajout de tâche");
       setNewTask({ title: "", description: "", due_date: "", image: null });
       fetchTasks(token);
+      window.alert('Nouvelle tâche ajouée avec succès.');
     } catch (err) {
       // Customize error message based on error type.
       let errorMessage = "Une erreur s'est produite. Veuillez réessayer.";
@@ -114,6 +119,8 @@ export default function TaskManager() {
 
   // Delete a task.
   async function deleteTask(id) {
+    const shouldDelete = window.confirm("Voulez-vous vraiment supprimer la tâche? Cette action est irreversible!");
+		if (!shouldDelete) return;
     try {
       await fetch(`${API_URL}/tasks/${id}`, {
         method: "DELETE",
@@ -136,7 +143,7 @@ export default function TaskManager() {
 
   return (
     <div className="max-w-xl mx-auto p-4">
-      <button onClick={handleLogout} className="bg-red-600 text-white px-2 py-1 rounded float-right">
+      <button onClick={handleLogout} className="bg-gray-700 text-white px-4 py-1 rounded float-right">
         Se déconnecter
       </button>
       <h1 className="text-2xl font-bold mb-4">Gestionnaire de tâches</h1>
@@ -176,7 +183,7 @@ export default function TaskManager() {
           className="border p-2 rounded w-full mb-2"
         />
         
-        <button onClick={addTask} className="bg-blue-500 text-white px-4 py-2 mb-2 rounded">Ajouter</button>
+        <button onClick={addTask} className="bg-blue-500 text-white px-4 py-1 mb-1 rounded">Ajouter</button>
       </div>
       <h2 className="text-lg font-bold">Liste des tâches</h2>
       {loading ? (
@@ -187,10 +194,24 @@ export default function TaskManager() {
         <ul>
           {tasks.map((task) => (
             <li key={task.id} className="flex justify-between items-center border-b py-2">
-              <span className="p-1">{task.title}</span>
+              <div className="flex items-center space-x-2">
+                {/* Task */}
+                <span className="pt-1">{task.title}</span>{/*onChange={(e) => updateTask(task.id, { title: e.target.value })}*/}
+                {/* Thumbnail */}
+                {task.image && (
+                  <Image
+                    src={task.image}
+                    alt={task.title}
+                    width={50}
+                    height={50}
+                    style={{ objectFit: "cover" }}
+                    className="rounded"
+                  />
+                )}
+              </div>
               <div>
               {task.completed ? 
-                <span className="mr-2">
+                <span className="text-green-900 mr-2">
                   Terminée
                 </span> :
                 <button
@@ -199,6 +220,12 @@ export default function TaskManager() {
                 >
                   Terminer
                 </button>}
+                <button
+                  onClick={() => editTask(task.id)}
+                  className="bg-yellow-400 text-gray-900 px-2 py-1 rounded mr-2"
+                >
+                  Modifier
+                </button>
                 <button
                   onClick={() => deleteTask(task.id)}
                   className="bg-red-500 text-white px-2 py-1 rounded"
