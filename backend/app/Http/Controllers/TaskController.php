@@ -8,6 +8,7 @@ use App\Models\Task;
 use App\Http\Resources\TaskResource;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Storage;
 
 class TaskController extends Controller
 {
@@ -39,7 +40,7 @@ class TaskController extends Controller
         // Handle image upload.
         $imagePath = null;
         if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('tasks', 'public'); // Store in storage/app/public/tasks.
+            $imagePath = $request->file('image')->store('tasks_images', 'public'); // Store in storage/app/public/tasks_images.
         }
 
         try {
@@ -47,7 +48,7 @@ class TaskController extends Controller
                 'title' => $request->title,
                 'description' => $request->description,
                 'due_date' => $request->due_date,
-                'image' => $request->file('image') ? $request->file('image')->store('tasks_images') : null,
+                'image' => $imagePath,
                 'user_id' => Auth::id(), // Associate task with the authenticated user.
             ]);
 
@@ -104,7 +105,7 @@ class TaskController extends Controller
             if ($task->image) {
                 Storage::disk('public')->delete($task->image);
             }
-            $imagePath = $request->file('image')->store('tasks', 'public');
+            $imagePath = $request->file('image')->store('tasks_images', 'public');
             $task->image = $imagePath;
         }
 
@@ -113,7 +114,7 @@ class TaskController extends Controller
                 'title' => $request->title,
                 'description' => $request->description,
                 'due_date' => $request->due_date,
-                'image' => $request->file('image') ? $request->file('image')->store('tasks_images') : $task->image,
+                'image' => $task->image,
             ]);
 
             return new TaskResource($task);
