@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import Image from "next/image";
 
 const API_URL = "http://localhost:8000/api";
@@ -13,14 +14,20 @@ export default function TaskManager() {
   const [error, setError] = useState(null);
   const [newTask, setNewTask] = useState({ title: "", description: "", due_date: "", image: null });
   const [token, setToken] = useState(null);
+  const [userId, setUserId] = useState(null);
 
-  // Redirect to login page if not logged in.
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
+    // Redirect to login page if not logged in.
     if (!storedToken) {
       router.push("/login");
       return;
     }
+
+    // Get user ID from local storage.
+    const storedUserId = localStorage.getItem("user_id");
+    if (storedUserId) setUserId(storedUserId);
+
     setToken(storedToken);
     fetchTasks(storedToken);
   }, []);
@@ -29,10 +36,6 @@ export default function TaskManager() {
   function handleLogout() {
     localStorage.removeItem("token");
     router.push("/login");
-  }
-  // Edit a task.
-  function editTask(id) {
-    //
   }
 
   // Fetch tasks from API.
@@ -193,8 +196,8 @@ export default function TaskManager() {
       ) : (
         <ul>
           {tasks.map((task) => (
-            <li key={task.id} className="flex justify-between items-center border-b py-2">
-              <div className="flex items-center space-x-2">
+            <li key={task.id} className="sm:flex sm:justify-between sm:items-center border-b py-2">
+              <div className="flex items-center space-x-2 pb-2 sm:pb-0">
                 {/* Task */}
                 <span className="pt-1">{task.title}</span>{/*onChange={(e) => updateTask(task.id, { title: e.target.value })}*/}
                 {/* Thumbnail */}
@@ -209,29 +212,44 @@ export default function TaskManager() {
                   />
                 )}
               </div>
-              <div>
-              {task.completed ? 
-                <span className="text-green-900 mr-2">
-                  Terminée
-                </span> :
-                <button
-                  onClick={() => markAsComplete(task.id)}
-                  className="bg-green-500 text-white px-2 py-1 rounded mr-2"
-                >
-                  Terminer
-                </button>}
-                <button
-                  onClick={() => editTask(task.id)}
-                  className="bg-yellow-400 text-gray-900 px-2 py-1 rounded mr-2"
-                >
-                  Modifier
-                </button>
-                <button
-                  onClick={() => deleteTask(task.id)}
-                  className="bg-red-500 text-white px-2 py-1 rounded"
-                >
-                  Supprimer
-                </button>
+              <div className="flex items-center justify-start sm:justify-end gap-2 flex-wrap">
+              {/* Task actions conditional display */}
+              {task.user_id == userId ? (
+                <>
+                  {task.completed ? (
+                    <span className="text-green-900">
+                      Terminée
+                    </span>
+                  ) : (
+                    <>
+                      <span className="text-gray-700">En cours</span>
+                      <button
+                        onClick={() => markAsComplete(task.id)}
+                        className="bg-green-500 text-white px-2 py-1 rounded"
+                      >
+                        Terminer
+                      </button>
+                    </>
+                  )}
+                  <Link href={`/tasks/edit/${task.id}`}>
+                    <button className="bg-yellow-400 text-gray-900 px-2 py-1 rounded">Modifier</button>
+                  </Link>
+                  <button
+                    onClick={() => deleteTask(task.id)}
+                    className="bg-red-500 text-white px-2 py-1 rounded"
+                  >
+                    Supprimer
+                  </button>
+                </>
+              ) :
+                <>
+                  {task.completed ? (
+                    <span className="text-green-900">Terminée</span>
+                  ) : (
+                    <span className="text-gray-700">En cours</span>
+                  )}
+                </>
+              }
               </div>
             </li>
           ))}
