@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Storage;
 
 class TaskResource extends JsonResource
 {
@@ -18,7 +19,7 @@ class TaskResource extends JsonResource
             'id'            => $this->id,
             'title'         => $this->title,
             'description'   => $this->description,
-            'image'         => $this->image,
+            'image'         => $this->image ? asset(Storage::url($this->image)) : null, // Full image URL.
             'due_date'      => $this->due_date,
             'completed'     => $this->completed,
             'user_id'       => $this->user_id,
