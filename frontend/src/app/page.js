@@ -157,7 +157,7 @@ export default function TaskManager() {
       {error && <p className="text-red-500">{error}</p>}
       <Link href="/tasks/create">
         <button className="bg-blue-500 text-white px-4 py-1 mb-4 rounded">
-          Create Task
+          Nouvelle tâche
         </button>
       </Link>
       <h2 className="text-lg font-bold">Liste des tâches</h2>
@@ -184,7 +184,7 @@ export default function TaskManager() {
                     alt={task.title}
                     width={50}
                     height={50}
-                    style={{ objectFit: "cover" }}
+                    style={{ objectFit: "cover", width: "auto", height: "auto" }}
                     className="rounded"
                   />
                 )}
