@@ -33,6 +33,8 @@ export default function Register() {
 
       const data = await res.json();
       localStorage.setItem("token", data.token);
+      localStorage.setItem("user_id", data.user_id);
+      window.alert("Inscription réussie!");
       router.push("/"); // Redirect to homepage after registration.
     } catch (err) {
       // Customize error message based on error type.

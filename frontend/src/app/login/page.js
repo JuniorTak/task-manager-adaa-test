@@ -32,6 +32,7 @@ export default function Login() {
 
       const data = await res.json();
       localStorage.setItem("token", data.token);
+      localStorage.setItem("user_id", data.user_id);
       router.push("/"); // Redirect to homepage after login.
     } catch (err) {
       // Customize error message based on error type.

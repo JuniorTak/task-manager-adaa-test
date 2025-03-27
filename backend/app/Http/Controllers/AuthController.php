@@ -41,7 +41,10 @@ class AuthController extends Controller
         ]);
 
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
-            return response()->json(['token' => Auth::user()->createToken('TaskManagerApp')->plainTextToken]);
+            return response()->json([
+                'user_id' => Auth::user()->id,
+                'token' => Auth::user()->createToken('TaskManagerApp')->plainTextToken
+            ]);
         }
 
         return response()->json(['message' => 'Unauthorized'], 401);
