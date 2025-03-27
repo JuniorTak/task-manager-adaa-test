@@ -11,6 +11,7 @@ export default function Edit() {
   const [error, setError] = useState(null);
   const [task, setTask] = useState({ title: "", description: "", due_date: "", user_id: null });
   const [token, setToken] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
@@ -68,6 +69,7 @@ export default function Edit() {
 
   // Update a task.
   async function updateTask(token) {
+    setLoading(true); // Show loading state.
     try {
       const taskData = {
         title: task.title,
@@ -98,6 +100,8 @@ export default function Edit() {
         errorMessage = "Identifiants invalides !";
       }
       setError(errorMessage);
+    } finally {
+      setLoading(false); // Remove loading state.
     }
   }
 
@@ -136,7 +140,9 @@ export default function Edit() {
         />
         
         <div className="space-x-2">
-          <button onClick={() => updateTask(token)} className="bg-blue-500 text-white px-4 py-1 mb-1 rounded">Valider</button>
+          <button onClick={() => updateTask(token)} className="bg-blue-500 text-white px-4 py-1 mb-1 rounded" disabled={loading}>
+            {loading ? "Mise à jour..." : "valider"}
+          </button>
           <button onClick={() => router.back()} className="bg-yellow-400 text-gray-900 px-4 py-1 mb-1 rounded">Retour</button>
         </div>
       </div>
