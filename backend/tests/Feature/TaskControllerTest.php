@@ -111,6 +111,30 @@ class TaskControllerTest extends TestCase
     }
 
     /**
+     * Authenticated user can view a specified task.
+     */
+    public function test_user_can_view_a_task()
+    {
+        $task = Task::create([
+            'title' => 'Test Task',
+            'description' => 'Test task description',
+            'due_date' => '2025-06-01',
+            'user_id' => $this->user->id,
+        ]);
+
+        $response = $this->actingAs($this->user, 'sanctum')->getJson('/api/tasks/' . $task->id);
+
+        $response->assertStatus(200)
+                 ->assertJson([
+                    'data' => [
+                        'title' => 'Test Task',
+                        'description' => 'Test task description',
+                        'due_date' => '2025-06-01',
+                    ],
+                ]);
+    }
+
+    /**
      * Authenticated user can update a task.
      */
     public function test_user_can_update_task()
