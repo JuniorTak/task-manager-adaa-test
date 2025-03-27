@@ -5,6 +5,9 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 
+// TaskModal component.
+import TaskModal from "@/app/components/TaskModal";
+
 const API_URL = "http://localhost:8000/api";
 
 export default function TaskManager() {
@@ -15,6 +18,7 @@ export default function TaskManager() {
   const [newTask, setNewTask] = useState({ title: "", description: "", due_date: "", image: null });
   const [token, setToken] = useState(null);
   const [userId, setUserId] = useState(null);
+  const [selectedTask, setSelectedTask] = useState(null);
 
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
@@ -151,43 +155,11 @@ export default function TaskManager() {
       </button>
       <h1 className="text-2xl font-bold mb-4">Gestionnaire de tâches</h1>
       {error && <p className="text-red-500">{error}</p>}
-      <div className="mb-4">
-        <h2 className="text-lg font-bold">Ajouter une tâche</h2>
-        <label htmlFor="title" className="mt-1">Titre</label>
-        <input
-          type="text"
-          id="title"
-          value={newTask.title}
-          onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
-          className="border p-2 rounded w-full mb-2"
-        />
-        <label htmlFor="task-image" className="mt-1">Image</label>
-        <input
-          type="file"
-          accept="image/*"
-          id="task-image"
-          onChange={(e) => setNewTask({ ...newTask, image: e.target.files[0] })}
-          className="border p-2 rounded w-full mb-2"
-        />
-        <label htmlFor="task-description" className="mt-1">Description</label>
-        <input
-          type="text"
-          id="task-description"
-          value={newTask.description}
-          onChange={(e) => setNewTask({ ...newTask, description: e.target.value })}
-          className="border p-2 rounded w-full mb-2"
-        />
-        <label htmlFor="task-due-date" className="mt-1">Date d'échéance</label>
-        <input
-          type="date"
-          id="task-due-date"
-          value={newTask.due_date}
-          onChange={(e) => setNewTask({ ...newTask, due_date: e.target.value })}
-          className="border p-2 rounded w-full mb-2"
-        />
-        
-        <button onClick={addTask} className="bg-blue-500 text-white px-4 py-1 mb-1 rounded">Ajouter</button>
-      </div>
+      <Link href="/tasks/create">
+        <button className="bg-blue-500 text-white px-4 py-1 mb-4 rounded">
+          Create Task
+        </button>
+      </Link>
       <h2 className="text-lg font-bold">Liste des tâches</h2>
       {loading ? (
         <p>Chargement de tâches...</p>
@@ -199,7 +171,12 @@ export default function TaskManager() {
             <li key={task.id} className="sm:flex sm:justify-between sm:items-center border-b py-2">
               <div className="flex items-center space-x-2 pb-2 sm:pb-0">
                 {/* Task */}
-                <span className="pt-1">{task.title}</span>{/*onChange={(e) => updateTask(task.id, { title: e.target.value })}*/}
+                <span
+                  className="cursor-pointer text-blue-600 pt-1"
+                  onClick={() => setSelectedTask(task)}
+                >
+                  {task.title}
+                </span>
                 {/* Thumbnail */}
                 {task.image && (
                   <Image
@@ -255,6 +232,8 @@ export default function TaskManager() {
           ))}
         </ul>
       )}
+      {/* Show Modal if task is selected */}
+      {selectedTask && <TaskModal task={selectedTask} onClose={() => setSelectedTask(null)} />}
     </div>
   );
 }
