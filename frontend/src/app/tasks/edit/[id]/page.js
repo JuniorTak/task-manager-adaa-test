@@ -11,6 +11,7 @@ export default function Edit() {
   const [error, setError] = useState(null);
   const [task, setTask] = useState({ title: "", description: "", due_date: "", user_id: null });
   const [token, setToken] = useState(null);
+  const [initialLoading, setInitialLoading] = useState(true);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -45,6 +46,7 @@ export default function Edit() {
   // Fetch the task from API.
   async function fetchTask(token) {
     try {
+      setInitialLoading(true);
       const res = await fetch(`${API_URL}/tasks/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -64,6 +66,8 @@ export default function Edit() {
         errorMessage = "Identifiants invalides !";
       }
       setError(errorMessage);
+    } finally {
+      setInitialLoading(false);
     }
   }
 
@@ -114,37 +118,43 @@ export default function Edit() {
       {error && <p className="text-red-500">{error}</p>}
       <div className="mb-4">
         <h2 className="text-lg font-bold">Modifier la tâche</h2>
-        <label htmlFor="title" className="mt-1">Titre</label>
-        <input
-          type="text"
-          id="title"
-          value={task.title}
-          onChange={(e) => setTask({ ...task, title: e.target.value })}
-          className="border p-2 rounded w-full mb-2"
-        />
-        <label htmlFor="task-description" className="mt-1">Description</label>
-        <input
-          type="text"
-          id="task-description"
-          value={task.description}
-          onChange={(e) => setTask({ ...task, description: e.target.value })}
-          className="border p-2 rounded w-full mb-2"
-        />
-        <label htmlFor="task-due-date" className="mt-1">Date d'échéance</label>
-        <input
-          type="date"
-          id="task-due-date"
-          value={task.due_date}
-          onChange={(e) => setTask({ ...task, due_date: e.target.value })}
-          className="border p-2 rounded w-full mb-2"
-        />
-        
-        <div className="space-x-2">
-          <button onClick={() => updateTask(token)} className="bg-blue-500 text-white px-4 py-1 mb-1 rounded" disabled={loading}>
-            {loading ? "Mise à jour..." : "valider"}
-          </button>
-          <button onClick={() => router.back()} className="bg-yellow-400 text-gray-900 px-4 py-1 mb-1 rounded">Retour</button>
-        </div>
+        {initialLoading ? (
+          <p>Chargement...</p>
+        ) : (
+          <>
+            <label htmlFor="title" className="mt-1">Titre</label>
+            <input
+              type="text"
+              id="title"
+              value={task.title}
+              onChange={(e) => setTask({ ...task, title: e.target.value })}
+              className="border p-2 rounded w-full mb-2"
+            />
+            <label htmlFor="task-description" className="mt-1">Description</label>
+            <input
+              type="text"
+              id="task-description"
+              value={task.description}
+              onChange={(e) => setTask({ ...task, description: e.target.value })}
+              className="border p-2 rounded w-full mb-2"
+            />
+            <label htmlFor="task-due-date" className="mt-1">Date d'échéance</label>
+            <input
+              type="date"
+              id="task-due-date"
+              value={task.due_date}
+              onChange={(e) => setTask({ ...task, due_date: e.target.value })}
+              className="border p-2 rounded w-full mb-2"
+            />
+            
+            <div className="space-x-2">
+              <button onClick={() => updateTask(token)} className="bg-blue-500 text-white px-4 py-1 mb-1 rounded" disabled={loading}>
+                {loading ? "Mise à jour..." : "valider"}
+              </button>
+              <button onClick={() => router.back()} className="bg-yellow-400 text-gray-900 px-4 py-1 mb-1 rounded">Retour</button>
+            </div>
+          </>  
+        )}
       </div>
     </div>
   );

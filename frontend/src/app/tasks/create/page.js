@@ -56,7 +56,7 @@ export default function TaskManager() {
 
       setNewTask({ title: "", description: "", due_date: "", image: null });
       alert("Nouvelle tâche ajoutée avec succès !");
-      router.push("/"); // Redirect to the main page.
+      router.back(); // Redirect back.
     } catch (err) {
       // Customize error message based on error type.
       let errorMessage = "Une erreur s'est produite. Veuillez réessayer.";
@@ -116,9 +116,12 @@ export default function TaskManager() {
           className="border p-2 rounded w-full mb-2"
         />
 
-        <button onClick={addTask} className="bg-blue-500 text-white px-4 py-1 mb-1 rounded" disabled={loading}>
-          {loading ? "Ajout en cours..." : "Ajouter"}
-        </button>
+        <div className="space-x-2">
+          <button onClick={addTask} className="bg-blue-500 text-white px-4 py-1 mb-1 rounded" disabled={loading}>
+            {loading ? "Ajout en cours..." : "Ajouter"}
+          </button>
+          <button onClick={() => router.back()} className="bg-yellow-400 text-gray-900 px-4 py-1 mb-1 rounded">Retour</button>
+        </div>
       </div>
     </div>
   );
