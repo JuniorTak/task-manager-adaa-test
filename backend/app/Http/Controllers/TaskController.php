@@ -58,6 +58,7 @@ class TaskController extends Controller
             'description' => 'required|string',
             'due_date' => 'required|date',
             'image' => 'nullable|image|max:2048', // Image max size 2MB.
+            'is_private' => 'nullable|in:0,1',
         ]);
 
         // Handle image upload.
@@ -71,6 +72,7 @@ class TaskController extends Controller
                 'title' => $request->title,
                 'description' => $request->description,
                 'due_date' => $request->due_date,
+                'is_private' => $request->is_private !== null ? (boolean) $request->is_private : null,
                 'image' => $imagePath,
                 'user_id' => Auth::id(), // Associate task with the authenticated user.
             ]);
@@ -121,6 +123,7 @@ class TaskController extends Controller
             'description' => 'required|string',
             'due_date' => 'required|date',
             'image' => 'nullable|image|max:2048', // Image max size 2MB.
+            'is_private' => 'nullable|in:0,1',
         ]);
 
         if ($request->hasFile('image')) {
@@ -138,6 +141,7 @@ class TaskController extends Controller
                 'description' => $request->description,
                 'due_date' => $request->due_date,
                 'image' => $task->image,
+                'is_private' => $request->is_private !== null ? (boolean) $request->is_private : null,
             ]);
 
             return new TaskResource($task);
