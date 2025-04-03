@@ -13,6 +13,29 @@ use Illuminate\Support\Facades\Storage;
 class TaskController extends Controller
 {
     /**
+     * Display the tasks for the new design.
+     */
+    public function publicTasks()
+    {
+        // Get all public tasks.
+        $tasks = Task::where('user_id', Auth::id())->orWhere('is_private', false)->orWhere('is_private', null)->get();
+
+        // Get the latest due date.
+        $latestDue = Task::select('due_date')->orderByDesc('due_date')->limit(1)->first();
+        $latestDate = $latestDue ? $latestDue->due_date : null;
+    
+        try {
+            // Return the tasks and the latest due date.
+            return response()->json([
+                'tasks' => $tasks,
+                'latestDate' => $latestDate
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Failed to retrieve tasks. ' . $e->getMessage()], 500);
+        }
+    }
+
+    /**
      * Display a listing of the resource.
      */
     public function index()
