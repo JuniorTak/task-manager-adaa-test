@@ -69,11 +69,11 @@ export default function NewDesignManager() {
           <div className="flex justify-center items-center gap-2">
             <div className="text-5xl">{(new Date(latestDate)).getDate()}</div>
             <div>
-              <div className="text-xl uppercase">{new Intl.DateTimeFormat("en-US", { month: "short"}).format(new Date(latestDate))}</div>
+              <div className="text-xl uppercase">{new Intl.DateTimeFormat("fr-FR", { month: "short"}).format(new Date(latestDate))}</div>
               <div className="text-lg">{(new Date(latestDate)).getFullYear()}</div>
             </div>
           </div>
-          <div className="text-lg">{new Intl.DateTimeFormat("en-US", { weekday: "long"}).format(new Date(latestDate))}</div>
+          <div className="text-lg">{new Intl.DateTimeFormat("fr-FR", { weekday: "long"}).format(new Date(latestDate))}</div>
         </div>) : null}
         {error && <p className="text-red-500">{error}</p>}
         {loading ? (
@@ -88,12 +88,12 @@ export default function NewDesignManager() {
                 {/* Task */}
                 {task.completed ? (
                   <>
-                    <span className="text-gray-400">{task.title} ({task.is_private ? 'privé' : 'publique'})</span>
+                    <span className="text-gray-400">{task.title} ({task.is_private ? 'privée' : 'publique'})</span>
                     <div className="border-green-700 border-2 bg-green-400 p-2 rounded-full"></div>
                   </>
                 ) : (
                   <>
-                    <span>{task.title} ({task.is_private ? 'privé' : 'publique'})</span>
+                    <span>{task.title} ({task.is_private ? 'privée' : 'publique'})</span>
                     {task.user_id == userId ? (
                       <button className="border-1 p-2 rounded-full" onClick={() => setSelectedTask(task)}></button>
                     ) : null }
