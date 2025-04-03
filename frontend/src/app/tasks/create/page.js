@@ -8,7 +8,7 @@ const API_URL = "http://localhost:8000/api";
 export default function TaskManager() {
   const router = useRouter();
   const [error, setError] = useState(null);
-  const [newTask, setNewTask] = useState({ title: "", description: "", due_date: "", image: null });
+  const [newTask, setNewTask] = useState({ title: "", description: "", due_date: "", image: null, is_private: null });
   const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -41,6 +41,7 @@ export default function TaskManager() {
       formData.append("description", newTask.description);
       formData.append("due_date", newTask.due_date);
       if (newTask.image) formData.append("image", newTask.image);
+      if (newTask.is_private !== null) formData.append("is_private", newTask.is_private);
 
       const res = await fetch(`${API_URL}/tasks`, {
         method: "POST",
@@ -48,14 +49,14 @@ export default function TaskManager() {
         body: formData,
       });
 
-      const result = await res.json(); // Parse JSON response
+      const result = await res.json(); // Parse JSON response.
 
       if (!res.ok) {
         throw new Error(result.message || "Échec de l'ajout de la tâche.");
       }
 
-      setNewTask({ title: "", description: "", due_date: "", image: null });
-      alert("Nouvelle tâche ajoutée avec succès !");
+      setNewTask({ title: "", description: "", due_date: "", image: null, is_private: null });
+      window.alert("Nouvelle tâche ajoutée avec succès !");
       router.back(); // Redirect back.
     } catch (err) {
       // Customize error message based on error type.
@@ -107,7 +108,7 @@ export default function TaskManager() {
           onChange={(e) => setNewTask({ ...newTask, description: e.target.value })}
           className="border p-2 rounded w-full mb-2"
         />
-        <label htmlFor="task-due-date" className="mt-1">Date d'échéance</label>
+        <label htmlFor="task-due-date" className="mt-1">Date d&apos;échéance</label>
         <input
           type="date"
           id="task-due-date"
@@ -115,6 +116,28 @@ export default function TaskManager() {
           onChange={(e) => setNewTask({ ...newTask, due_date: e.target.value })}
           className="border p-2 rounded w-full mb-2"
         />
+        <fieldset className="mb-4">
+          <legend className="mt-1">Type de tâches</legend>
+          <label htmlFor="public-task-type" className="mr-4">
+            Publique
+            <input
+              type="radio"
+              id="public-task-type"
+              name="task-type"
+              onChange={(e) => setNewTask({ ...newTask, is_private: 0 })}
+              className="ml-2"
+            />
+          </label>
+          <label htmlFor="private-task-type" className="">
+            Privée
+          <input
+            type="radio"
+            id="private-task-type"
+            name="task-type"
+            onChange={(e) => setNewTask({ ...newTask, is_private: 1 })}
+            className="ml-2"
+          /></label>
+        </fieldset>
 
         <div className="space-x-2">
           <button onClick={addTask} className="bg-blue-500 text-white px-4 py-1 mb-1 rounded" disabled={loading}>
