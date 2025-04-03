@@ -54,7 +54,13 @@ export default function NewModal({ task, onClose, token}) {
 
   return (
     <div className="fixed inset-0 bg-transparent backdrop-blur-md flex justify-center items-center">
-      <div className="bg-white p-6 rounded shadow-lg max-w-md w-full">
+      <div className="relative bg-white p-6 rounded shadow-lg max-w-md w-full">
+      <button
+        className="absolute -top-4 -right-4 w-9 h-9 cursor-pointer z-[1004] bg-gray-700 border-4 border-white rounded-full bg-center bg-no-repeat"
+        style={{ backgroundImage: "url(/images/ico_x_white_15x15.png)" }}
+        onClick={onClose}
+      >
+      </button>
         {error && <p className="text-red-500">{error}</p>}
         <p className="pb-6">Voulez-vous marquer la tâche - <span className="text-blue-500">{task.title}</span> -  comme terminée ou la supprimer ?</p>
         <div className="space-x-2">
