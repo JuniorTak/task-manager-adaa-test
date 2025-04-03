@@ -22,6 +22,7 @@ class TaskResource extends JsonResource
             'image'         => $this->image ? asset(Storage::url($this->image)) : null, // Full image URL.
             'due_date'      => $this->due_date,
             'completed'     => $this->completed,
+            'is_private'    => $this->is_private,
             'user_id'       => $this->user_id,
         ];
     }

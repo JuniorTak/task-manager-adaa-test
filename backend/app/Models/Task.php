@@ -17,6 +17,7 @@ class Task extends Model
         'image',
         'due_date',
         'completed',
+        'is_private',
         'user_id',
     ];
 
