@@ -15,3 +15,4 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanc
 
 Route::apiResource('tasks', TaskController::class)->middleware('auth:sanctum');
 Route::middleware('auth:sanctum')->put('/tasks/{task}/complete', [TaskController::class, 'markAsCompleted'])->name('tasks.complete');
+Route::middleware('auth:sanctum')->get('/public/tasks', [TaskController::class, 'publicTasks'])->name('tasks.all');
