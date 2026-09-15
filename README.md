@@ -61,58 +61,67 @@ J'ai résolu efficacement les problèmes de performance en:
 ## Comment utiliser l'application
 
 ### 1. Installation
-Tout d’abord, clonez le référentiel et allez à la racine du projet:
-
+Tout d’abord, clonez le dépôt et rendez-vous à la racine du projet:
 ```bash
 git clone https://github.com/JuniorTak/task-manager-adaa-test.git
-cd task-manager-aada-test
+cd task-manager-adaa-test
 ```
 
 Les commandes qui suivent assument que nous partons de la racine du projet.
 
-- Pour le backend, installez les dépendances, générez la clé du backend, éffectuez les migrations:
+#### 📦 Backend
 
+1. Accédez au dossier backend et installez les dépendances PHP :
 ```bash
 cd backend
 composer install
+```
+
+2. Créez votre fichier d'environnement (si ce n'est pas déjà fait) :
+```bash
+cp .env.example .env
+```
+
+3. Générez la clé de l'application et effectuez les migrations de la base de données :
+```bash
 php artisan key:generate
 php artisan migrate
+```
+
+4. Installez les dépendances Node.js et compilez les assets pour la production :
+```bash
 npm install
-```
-
-Générez les assets pour la production:
-
-```bash
 npm run build
 ```
 
-Ou générez les assets pendant le développement:
+#### 📦 Frontend
 
+Revenez à la racine, accédez au dossier frontend et installez les dépendances :
 ```bash
-npm run build
-```
-
-- Pour le frontend, installez les dépendances:
-```bash
-cd frontend
+cd ../frontend
 npm install
 ```
 
 ### 2. Démarrer le serveur de développement
-Lancez le serveur d'API localement:
+Pour faire fonctionner l'application localement, vous devez lancer le backend et le frontend en même temps.
 
+#### 🖥️ Étape A : Lancer l'API (Backend)
+Depuis la racine du projet, exécutez :
 ```bash
 cd backend
 php artisan serve
 ```
-Pendant que le serveur fonctionne, exécutez l'application localement:
 
+*L'API sera accessible sur http://localhost:8000.*
+
+#### 💻 Étape B : Lancer l'application (Frontend)
+**Ouvrez un nouveau terminal**, positionnez-vous à la racine du projet, puis exécutez :
 ```bash
 cd frontend
 npm run dev
 ```
 
-Par défaut, l'application fonctionne sur http://localhost:3000.
+*Par défaut, l'application fonctionne sur http://localhost:3000.*
 
 ### 3. Authentication
 L'application nécessite une authentification de l'utilisateur.
@@ -204,7 +213,7 @@ php artisan test --filter=test_user_can_view_a_task
 
 ## Author
 
-- [Hyppolite T.](https://tinyurl.com/htfmystrikingly)
+- [Hyppolite T.](https://tinyurl.com/htfwpcom)
 
 ## License
 
