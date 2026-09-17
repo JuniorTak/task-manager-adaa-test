@@ -11,6 +11,7 @@ export default function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   // Redirect to homepage if already logged in.
   useEffect(() => {
@@ -22,6 +23,7 @@ export default function Register() {
 
   async function handleRegister(e) {
     e.preventDefault();
+    setLoading(true); // Show loading state.
     try {
       const res = await fetch(`${API_URL}/register`, {
         method: "POST",
@@ -47,6 +49,8 @@ export default function Register() {
         errorMessage = "Identifiants invalides !";
       }
       setError(errorMessage);
+    } finally {
+      setLoading(false); // Hide loading state.
     }
   }
 
@@ -79,8 +83,8 @@ export default function Register() {
           className="border p-2 rounded w-full"
           required
         />
-        <button type="submit" className="bg-green-500 text-white px-4 py-2 rounded">
-          S'inscrire
+        <button type="submit" className="bg-green-500 text-white px-4 py-2 rounded" disabled={loading}>
+          {loading ? "Inscription..." : "S'inscrire"}
         </button>
       </form>
       <p className="mt-4">

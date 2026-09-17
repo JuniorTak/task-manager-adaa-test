@@ -10,6 +10,7 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   // Redirect to homepage if already logged in.
   useEffect(() => {
@@ -21,6 +22,7 @@ export default function Login() {
 
   async function handleLogin(e) {
     e.preventDefault();
+    setLoading(true); // Show loading state.
     try {
       const res = await fetch(`${API_URL}/login`, {
         method: "POST",
@@ -45,6 +47,8 @@ export default function Login() {
         errorMessage = "Identifiants invalides !";
       }
       setError(errorMessage);
+    } finally {
+      setLoading(false); // Hide loading state.
     }
   }
 
@@ -69,8 +73,8 @@ export default function Login() {
           className="border p-2 rounded w-full"
           required
         />
-        <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">
-          Se Connecter
+        <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded" disabled={loading}>
+          {loading ? "Connexion..." : "Se Connecter"}
         </button>
       </form>
       <p className="mt-4">
