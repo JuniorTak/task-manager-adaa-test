@@ -18,7 +18,7 @@ export default function Login() {
     if (token) {
       router.push("/");
     }
-  }, []);
+  }, [router]);
 
   async function handleLogin(e) {
     e.preventDefault();

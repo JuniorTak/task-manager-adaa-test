@@ -19,7 +19,7 @@ export default function Register() {
     if (token) {
       router.push("/");
     }
-  }, []);
+  }, [router]);
 
   async function handleRegister(e) {
     e.preventDefault();
