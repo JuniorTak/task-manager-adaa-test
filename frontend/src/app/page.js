@@ -29,11 +29,11 @@ export default function TaskManager() {
 
     // Get user ID from local storage.
     const storedUserId = localStorage.getItem("user_id");
-    if (storedUserId) setUserId(storedUserId);
+    if (storedUserId) setUserId(Number(storedUserId));
 
     setToken(storedToken);
     fetchTasks(storedToken);
-  }, []);
+  }, [router]);
 
   // Logout function.
   function handleLogout() {
@@ -121,15 +121,13 @@ export default function TaskManager() {
       </button>
       <h1 className="text-2xl font-bold mb-4">Gestionnaire de tâches</h1>
       {error && <p className="text-red-500">{error}</p>}
-      <Link href="/tasks/create">
-        <button className="bg-blue-500 text-white px-4 py-1 mb-4 rounded">
-          Nouvelle tâche
-        </button>
+      <Link href="/tasks/create" className="bg-blue-500 text-white px-4 py-1 mb-4 rounded">
+        Nouvelle tâche
       </Link>
       <h2 className="text-lg font-bold">Liste des tâches</h2>
       {loading ? (
         <p>Chargement de tâches...</p>
-      ) : tasks === null ? (
+      ) : tasks.length === 0 ? (
         <p>Aucune tâche.</p>
       ) : (
         <>
@@ -171,7 +169,7 @@ export default function TaskManager() {
                 </div>
                 <div className="flex items-center justify-start sm:justify-end gap-2 flex-wrap">
                 {/* Task actions conditional display */}
-                {task.user_id == userId ? (
+                {userId !== null && Number(task.user_id) === Number(userId) ? (
                   <>
                     {task.completed ? (
                       <span className="text-green-900">
@@ -188,8 +186,8 @@ export default function TaskManager() {
                         </button>
                       </>
                     )}
-                    <Link href={`/tasks/edit/${task.id}`}>
-                      <button className="bg-yellow-400 text-gray-900 px-2 py-1 rounded">Modifier</button>
+                    <Link href={`/tasks/edit/${task.id}`} className="bg-yellow-400 text-gray-900 px-2 py-1 rounded">
+                      Modifier
                     </Link>
                     <button
                       onClick={() => deleteTask(task.id)}
