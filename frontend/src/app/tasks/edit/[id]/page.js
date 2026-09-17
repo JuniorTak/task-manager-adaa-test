@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 
 const API_URL = "http://localhost:8000/api";
@@ -14,37 +14,8 @@ export default function Edit() {
   const [initialLoading, setInitialLoading] = useState(true);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    const storedToken = localStorage.getItem("token");
-    if (!storedToken) {
-      router.push("/login"); // Redirect to login page if not logged in.
-      return;
-    }
-
-    setToken(storedToken);
-    if (id) fetchTask(storedToken);
-
-  }, [id]);
-
-  useEffect(() => {
-    // Get user ID from local storage.
-    const storedUserId = localStorage.getItem("user_id");
-
-    if(storedUserId && task.user_id && storedUserId != task.user_id) {
-      window.alert('Vous n\'avez pas le droit de modifier cette tâche.');
-      router.push("/"); // Redirect to the main page if the user ID is not the same as the task ID.
-      return;
-    }
-  }, [router, task]);
-
-  // Logout function.
-  function handleLogout() {
-    localStorage.removeItem("token");
-    router.push("/login");
-  }
-
   // Fetch the task from API.
-  async function fetchTask(token) {
+  const fetchTask = useCallback(async function fetchTask(token) {
     try {
       setInitialLoading(true);
       const res = await fetch(`${API_URL}/tasks/${id}`, {
@@ -68,6 +39,35 @@ export default function Edit() {
     } finally {
       setInitialLoading(false);
     }
+  }, [id]);
+
+  useEffect(() => {
+    const storedToken = localStorage.getItem("token");
+    if (!storedToken) {
+      router.push("/login"); // Redirect to login page if not logged in.
+      return;
+    }
+
+    setToken(storedToken);
+    if (id) fetchTask(storedToken);
+
+  }, [fetchTask, id, router]);
+
+  useEffect(() => {
+    // Get user ID from local storage.
+    const storedUserId = localStorage.getItem("user_id");
+
+    if(storedUserId && task.user_id && storedUserId != task.user_id) {
+      window.alert('Vous n\'avez pas le droit de modifier cette tâche.');
+      router.push("/"); // Redirect to the main page if the user ID is not the same as the task ID.
+      return;
+    }
+  }, [router, task]);
+
+  // Logout function.
+  function handleLogout() {
+    localStorage.removeItem("token");
+    router.push("/login");
   }
 
   // Update a task.
