@@ -17,8 +17,13 @@ class TaskController extends Controller
      */
     public function publicTasks()
     {
-        // Get all public tasks.
-        $tasks = Task::where('user_id', Auth::id())->orWhere('is_private', false)->orWhere('is_private', null)->get();
+        // Get public tasks OR the authenticated user's private tasks securely.
+        $tasks = Task::where('user_id', Auth::id())
+            ->orWhere(function ($query) {
+                $query->where('is_private', false)
+                    ->orWhereNull('is_private');
+            })
+            ->get();
 
         // Get the latest due date.
         $latestDue = Task::select('due_date')->orderByDesc('due_date')->limit(1)->first();
@@ -41,8 +46,16 @@ class TaskController extends Controller
     public function index()
     {
         try {
-            // Return a resource collection from all the tasks.
-            return TaskResource::collection(Task::all());
+            // Filter authorized tasks.
+            $tasks = Task::where('user_id', Auth::id())
+            ->orWhere(function ($query) {
+                $query->where('is_private', false)
+                    ->orWhereNull('is_private');
+            })
+            ->get();
+            
+            // Return a resource collection from the authorized tasks.
+            return TaskResource::collection($tasks);
         } catch (\Exception $e) {
             return response()->json(['message' => 'Failed to retrieve tasks. ' . $e->getMessage()], 500);
         }
@@ -72,7 +85,7 @@ class TaskController extends Controller
                 'title' => $request->title,
                 'description' => $request->description,
                 'due_date' => $request->due_date,
-                'is_private' => $request->is_private !== null ? (boolean) $request->is_private : null,
+                'is_private' => $request->is_private !== null ? (boolean) $request->is_private : false,
                 'image' => $imagePath,
                 'user_id' => Auth::id(), // Associate task with the authenticated user.
             ]);
@@ -88,6 +101,10 @@ class TaskController extends Controller
      */
     public function show(Task $task)
     {
+        // Task confidentiality check.
+        if ($task->is_private && $task->user_id !== Auth::id()) {
+            return response()->json(['message' => 'Unauthorized access to this private task.'], 403);
+        }
         return new TaskResource($task);
     }
 
@@ -141,7 +158,7 @@ class TaskController extends Controller
                 'description' => $request->description,
                 'due_date' => $request->due_date,
                 'image' => $task->image,
-                'is_private' => $request->is_private !== null ? (boolean) $request->is_private : null,
+                'is_private' => $request->is_private !== null ? (boolean) $request->is_private : false,
             ]);
 
             return new TaskResource($task);
@@ -160,6 +177,12 @@ class TaskController extends Controller
         }
 
         try {
+            // Delete image if it exists.
+            if ($task->image) {
+                Storage::disk('public')->delete($task->image);
+            }
+
+            // Delete the task.
             $task->delete();
 
             return response()->json(['message' => 'Task deleted successfully'], 200);
