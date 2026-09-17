@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
-// TaskModal component.
+// NewModal component.
 import NewModal from "@/app/components/NewModal";
 
 const API_URL = "http://localhost:8000/api";
@@ -29,7 +29,7 @@ export default function NewDesignManager() {
 
     // Get user ID from local storage.
     const storedUserId = localStorage.getItem("user_id");
-    if (storedUserId) setUserId(storedUserId);
+    if (storedUserId) setUserId(Number(storedUserId));
 
     setToken(storedToken);
     fetchAllTasks(storedToken);
@@ -65,20 +65,20 @@ export default function NewDesignManager() {
   return (
     <div className="fixed inset-0 bg-gray-400 flex justify-center items-center">
       <div className="relative bg-white p-12 rounded shadow-lg max-w-xl w-full mx-auto">
-        {latestDate ? (<div className="sm:flex sm:justify-between sm:items-center pb-4">
+        {latestDate ? (<div className="sm:flex sm:justify-between sm:items-center pb-4" suppressHydrationWarning>
           <div className="flex justify-center items-center gap-2">
-            <div className="text-5xl">{(new Date(latestDate)).getDate()}</div>
+            <div className="text-5xl" suppressHydrationWarning>{(new Date(latestDate)).getDate()}</div>
             <div>
-              <div className="text-xl uppercase">{new Intl.DateTimeFormat("fr-FR", { month: "short"}).format(new Date(latestDate))}</div>
-              <div className="text-lg">{(new Date(latestDate)).getFullYear()}</div>
+              <div className="text-xl uppercase" suppressHydrationWarning>{new Intl.DateTimeFormat("fr-FR", { month: "short"}).format(new Date(latestDate))}</div>
+              <div className="text-lg" suppressHydrationWarning>{(new Date(latestDate)).getFullYear()}</div>
             </div>
           </div>
-          <div className="text-lg">{new Intl.DateTimeFormat("fr-FR", { weekday: "long"}).format(new Date(latestDate))}</div>
+          <div className="text-lg" suppressHydrationWarning>{new Intl.DateTimeFormat("fr-FR", { weekday: "long"}).format(new Date(latestDate))}</div>
         </div>) : null}
         {error && <p className="text-red-500">{error}</p>}
         {loading ? (
           <p>Chargement de tâches...</p>
-        ) : tasks === null ? (
+        ) : tasks.length === 0 ? (
           <p>Aucune tâche.</p>
         ) : (
           <>
@@ -94,7 +94,7 @@ export default function NewDesignManager() {
                 ) : (
                   <>
                     <span>{task.title} ({task.is_private ? 'privée' : 'publique'})</span>
-                    {task.user_id == userId ? (
+                    {userId !== null && Number(task.user_id) === Number(userId) ? (
                       <button className="border-1 p-2 rounded-full" onClick={() => setSelectedTask(task)}></button>
                     ) : null }
                   </>
